@@ -56,15 +56,19 @@ public class SwaggerConfig {
                 swaggerRoute.setPredicates(List.of(new PredicateDefinition("Path=/v3/api-docs/" + serviceName)));
                 swaggerRoute.setFilters(List.of(new FilterDefinition("RewritePath=/v3/api-docs/" + serviceName + ", /v3/api-docs")));
 
-                // 3. ĐỊNH NGHĨA ROUTE API SẠCH (KHÚC BẠN HỎI NẰM Ở ĐÂY)
+                // 3. ĐỊNH NGHĨA ROUTE API (Ví dụ: /api/user/** -> /user/**)
                 RouteDefinition apiRoute = new RouteDefinition();
                 apiRoute.setId("api_" + serviceName);
                 apiRoute.setUri(URI.create("lb://" + serviceName));
 
-                // Nếu bạn muốn API sạch hoàn toàn (Cẩn thận trùng lặp endpoint giữa các service)
+                // Khớp các request bắt đầu bằng /api/ten-service/
                 apiRoute.setPredicates(List.of(new PredicateDefinition("Path=/api/" + shortName + "/**")));
 
-                // 4. Lưu cả 2 route vào Gateway
+                // Quan trọng: Loại bỏ prefix /api/shortName trước khi gửi đến service con
+                // Ví dụ: Gateway nhận /api/user/profile -> Service con nhận /profile
+                apiRoute.setFilters(List.of(new FilterDefinition("RewritePath=/api/" + shortName + "/(?<remaining>.*), /${remaining}")));
+
+                // 4. Lưu và Refresh
                 routeDefinitionWriter.save(Mono.just(swaggerRoute)).subscribe();
                 routeDefinitionWriter.save(Mono.just(apiRoute)).subscribe();
 
