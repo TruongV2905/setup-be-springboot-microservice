@@ -1,5 +1,6 @@
 package com.nqt.api_gateway.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 @Configuration
 @EnableScheduling
+@Slf4j
 public class SwaggerConfig {
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -36,7 +38,7 @@ public class SwaggerConfig {
 
     private final Set<String> registeredServices = new HashSet<>();
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 10000)
     public void refreshSwagger() {
         List<String> services = discoveryClient.getServices();
 
@@ -56,20 +58,24 @@ public class SwaggerConfig {
                 swaggerRoute.setPredicates(List.of(new PredicateDefinition("Path=/v3/api-docs/" + serviceName)));
                 swaggerRoute.setFilters(List.of(new FilterDefinition("RewritePath=/v3/api-docs/" + serviceName + ", /v3/api-docs")));
 
-                // 3. ĐỊNH NGHĨA ROUTE API SẠCH (KHÚC BẠN HỎI NẰM Ở ĐÂY)
+                // 3. ĐỊNH NGHĨA ROUTE API (Ví dụ: /api/user/** -> /user/**)
                 RouteDefinition apiRoute = new RouteDefinition();
                 apiRoute.setId("api_" + serviceName);
                 apiRoute.setUri(URI.create("lb://" + serviceName));
 
-                // Nếu bạn muốn API sạch hoàn toàn (Cẩn thận trùng lặp endpoint giữa các service)
+                // Khớp các request bắt đầu bằng /api/ten-service/
                 apiRoute.setPredicates(List.of(new PredicateDefinition("Path=/api/" + shortName + "/**")));
 
-                // 4. Lưu cả 2 route vào Gateway
+                // Quan trọng: Loại bỏ prefix /api/shortName trước khi gửi đến service con
+                // Ví dụ: Gateway nhận /api/user/profile -> Service con nhận /profile
+                apiRoute.setFilters(List.of(new FilterDefinition("RewritePath=/api/" + shortName + "/(?<remaining>.*), /${remaining}")));
+
+                // 4. Lưu và Refresh
                 routeDefinitionWriter.save(Mono.just(swaggerRoute)).subscribe();
                 routeDefinitionWriter.save(Mono.just(apiRoute)).subscribe();
 
                 registeredServices.add(serviceName);
-                System.out.println("✅ Đã nạp Route và Swagger cho: " + serviceName);
+                log.info("Registered Swagger and API route for service: " + serviceName);
                 // Cực kỳ quan trọng: Refresh lại bảng định tuyến của Gateway
                 publisher.publishEvent(new RefreshRoutesEvent(this));
             }
