@@ -1,5 +1,6 @@
 package com.nqt.api_gateway.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -15,13 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class SwaggerProxyController {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
 
     @Value("${app.api-prefix}")
     private String apiPrefix;
@@ -29,22 +29,20 @@ public class SwaggerProxyController {
 
     @GetMapping("/v3/api-docs/{serviceName}")
     public Mono<Map<String, Object>> getSwagger(@PathVariable String serviceName) {
-        // 1. Xác định shortName để làm prefix (ví dụ: identity-service -> identity)
         String shortName = serviceName.replace("-service", "").toLowerCase();
 
-        // 2. Tìm instance của service từ Discovery Client
-        return Mono.justOrEmpty(discoveryClient.getInstances(serviceName).stream().findFirst())
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found: " + serviceName)))
-                .flatMap(instance -> {
-                    String url = instance.getUri() + "/v3/api-docs";
+        // Gọi trực tiếp qua Load Balancer của Spring Cloud
+        String url = "http://" + serviceName + "/v3/api-docs";
 
-                    // 3. Gọi WebClient với TypeReference để tránh lỗi "incompatible types"
-                    return webClientBuilder.build()
-                            .get()
-                            .uri(url)
-                            .retrieve()
-                            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                            .map(swagger -> modifySwaggerJson(swagger, shortName));
+        return webClientBuilder.build()
+                .get()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .map(swagger -> modifySwaggerJson(swagger, shortName))
+                .onErrorResume(e -> {
+                    log.error("Không thể lấy Swagger từ {}: {}", serviceName, e.getMessage());
+                    return Mono.error(new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service " + serviceName + " không phản hồi"));
                 });
     }
 

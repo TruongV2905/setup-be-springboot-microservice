@@ -1,10 +1,10 @@
-package com.nqt.identity_service;
+package com.nqt.demo_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class IdentityServiceApplicationTests {
+class DemoServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

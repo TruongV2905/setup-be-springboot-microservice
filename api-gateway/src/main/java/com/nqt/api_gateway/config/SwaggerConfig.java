@@ -1,5 +1,6 @@
 package com.nqt.api_gateway.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 @Configuration
 @EnableScheduling
+@Slf4j
 public class SwaggerConfig {
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -36,7 +38,7 @@ public class SwaggerConfig {
 
     private final Set<String> registeredServices = new HashSet<>();
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 10000)
     public void refreshSwagger() {
         List<String> services = discoveryClient.getServices();
 
@@ -73,7 +75,7 @@ public class SwaggerConfig {
                 routeDefinitionWriter.save(Mono.just(apiRoute)).subscribe();
 
                 registeredServices.add(serviceName);
-                System.out.println("✅ Đã nạp Route và Swagger cho: " + serviceName);
+                log.info("Registered Swagger and API route for service: " + serviceName);
                 // Cực kỳ quan trọng: Refresh lại bảng định tuyến của Gateway
                 publisher.publishEvent(new RefreshRoutesEvent(this));
             }

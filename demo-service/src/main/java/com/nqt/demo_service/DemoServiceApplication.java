@@ -1,4 +1,4 @@
-package com.nqt.identity_service;
+package com.nqt.demo_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableFeignClients
 @EnableDiscoveryClient
-public class IdentityServiceApplication {
+public class DemoServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(IdentityServiceApplication.class, args);
+		SpringApplication.run(DemoServiceApplication.class, args);
 	}
 
 }
