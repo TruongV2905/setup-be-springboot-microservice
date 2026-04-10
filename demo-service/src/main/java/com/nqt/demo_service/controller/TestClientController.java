@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test-client")
 public class TestClientController {
     @PostMapping
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<APIResponse<String>> testClient(@RequestBody String message) {
         return ResponseEntity.ok(APIResponse.success(message));
     }

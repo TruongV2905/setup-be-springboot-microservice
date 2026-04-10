@@ -1,7 +1,7 @@
 package com.nqt.identity_service.dto.request;
 
+import com.nqt.common_starter.validator.EnumValidator;
 import com.nqt.identity_service.constant.Gender;
-import com.nqt.identity_service.validator.EnumValidator;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

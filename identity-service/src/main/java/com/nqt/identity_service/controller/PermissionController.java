@@ -1,7 +1,7 @@
 package com.nqt.identity_service.controller;
 
+import com.nqt.common_starter.dto.response.APIResponse;
 import com.nqt.identity_service.dto.request.PermissionRequest;
-import com.nqt.identity_service.dto.response.APIResponse;
 import com.nqt.identity_service.dto.response.PermissionResponse;
 import com.nqt.identity_service.service.PermissionService;
 import lombok.AccessLevel;

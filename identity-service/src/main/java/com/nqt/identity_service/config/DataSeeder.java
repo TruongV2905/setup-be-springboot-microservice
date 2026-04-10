@@ -1,9 +1,9 @@
 package com.nqt.identity_service.config;
 
+import com.nqt.common_starter.exception.GlobalException;
 import com.nqt.identity_service.constant.UserStatus;
 import com.nqt.identity_service.entity.Role;
 import com.nqt.identity_service.entity.User;
-import com.nqt.identity_service.exception.GlobalException;
 import com.nqt.identity_service.repository.RoleRepository;
 import com.nqt.identity_service.repository.UserRepository;
 import lombok.AccessLevel;

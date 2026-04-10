@@ -1,14 +1,13 @@
 package com.nqt.identity_service.controller;
 
+import com.nqt.common_starter.dto.response.APIResponse;
 import com.nqt.identity_service.dto.request.IntrospectRequest;
 import com.nqt.identity_service.dto.request.LoginRequest;
 import com.nqt.identity_service.dto.request.RegisterRequest;
-import com.nqt.identity_service.dto.response.APIResponse;
 import com.nqt.identity_service.dto.response.IntrospectResponse;
 import com.nqt.identity_service.dto.response.UserResponse;
 import com.nqt.identity_service.service.AuthenticationService;
 import com.nqt.identity_service.service.TokenService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

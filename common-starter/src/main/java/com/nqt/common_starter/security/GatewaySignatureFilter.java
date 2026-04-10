@@ -66,6 +66,11 @@ public class GatewaySignatureFilter extends OncePerRequestFilter {
             }
 
             // Verify HMAC
+
+
+
+
+
             String dataToVerify = userId
                     + (roles != null ? roles : "")
                     + (permissions != null ? permissions : "");

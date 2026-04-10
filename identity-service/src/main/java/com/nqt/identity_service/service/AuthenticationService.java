@@ -1,14 +1,13 @@
 package com.nqt.identity_service.service;
 
-import com.nqt.identity_service.constant.ErrorCode;
+import com.nqt.common_starter.constant.ErrorCode;
+import com.nqt.common_starter.dto.response.APIResponse;
+import com.nqt.common_starter.exception.GlobalException;
 import com.nqt.identity_service.constant.UserStatus;
 import com.nqt.identity_service.dto.request.LoginRequest;
 import com.nqt.identity_service.dto.request.RegisterRequest;
-import com.nqt.identity_service.dto.response.APIResponse;
 import com.nqt.identity_service.dto.response.UserResponse;
-import com.nqt.identity_service.entity.Role;
 import com.nqt.identity_service.entity.User;
-import com.nqt.identity_service.exception.GlobalException;
 import com.nqt.identity_service.mapper.UserMapper;
 import com.nqt.identity_service.repository.RoleRepository;
 import com.nqt.identity_service.repository.UserRepository;
@@ -16,14 +15,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
